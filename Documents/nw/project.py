@@ -77,7 +77,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuStart_capture.menuAction())
         self.menubar.addAction(self.menuStop_capture.menuAction())
         self.menubar.addAction(self.menuRestart.menuAction())
-
+    
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -85,8 +85,9 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         self.label.setText(_translate("MainWindow", "Capture", None))
         self.label_2.setText(_translate("MainWindow", "using this filter:", None))
-        self.pushButton.setText(_translate("MainWindow", "Ethernet ", None))
-        self.pushButton_2.setText(_translate("MainWindow", "wifi", None))
+        self.pushButton.setText(_translate("MainWindow", "Start", None))
+        self.pushButton_2.setText(_translate("MainWindow", "Reset", None))
+        ##self.pushButton_5.setText(_translate("MainWindow", "start", None))
         self.menuStart_capture.setTitle(_translate("MainWindow", "start capture", None))
         self.menuStop_capture.setTitle(_translate("MainWindow", "stop capture", None))
         self.menuRestart.setTitle(_translate("MainWindow", "refresh", None))
