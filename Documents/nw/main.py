@@ -56,9 +56,9 @@ class SniffThread(QThread):
         # self.emit(QtCore.SIGNAL('printhexa(QString)'), content)    
       
 
-  def run(self):
+  def run(self, f):
       # your logic here 
-      pkts= sniff(timeout=50,prn=self.capturepackets)
+      pkts= sniff(filter=f, timeout=50,prn=self.capturepackets)
       # while 1:
       #   pkt= sniff(count=1)
       #   psummary='Packet #{}: {} ==> {}'.format(counter, pkt[0][1].src, pkt[0][1].dst) 
@@ -71,7 +71,11 @@ class ExampleApp(QtGui.QMainWindow, project.Ui_MainWindow):
         super(self.__class__, self).__init__()
         self.setupUi(self)  # This is defined in design.py file automatically
         self.pushButton.clicked.connect(self.b1_clicked)
+        
         self.list_submissions.itemClicked.connect(self.printhexa)
+        #f= self.filter.Text
+    		
+        #self.emit(QtCore.SIGNAL('run(QString)'), f) 
         # self.pushButton_2.clicked.connect(self.b2_clicked)
     def printhexa(self,content):
         t = self.list_submissions.currentItem().text()
@@ -102,7 +106,7 @@ class ExampleApp(QtGui.QMainWindow, project.Ui_MainWindow):
     		
     def b1_clicked(self):
 
-        #f= self.filter.Text
+
         self.get_thread = SniffThread()
         
         self.connect(self.get_thread, SIGNAL("settext(QString,QString)"), self.settext)
@@ -128,6 +132,7 @@ def main():
 	
     app = QtGui.QApplication(sys.argv)  # A new instance of QApplication
 
+  
     form = ExampleApp()                 # We set the form to be our ExampleApp (design) 
     form.show()                         # Show the form
     app.exec_()                         # and execute the app
