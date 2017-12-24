@@ -62,7 +62,7 @@ class Ui_MainWindow(object):
         # self.tableView.setGeometry(QtCore.QRect(20, 160, 661, 192))
         # self.tableView.setObjectName(_fromUtf8("tableView"))
         self.textEdit = QtGui.QTextEdit(self.centralwidget)
-        self.textEdit.setGeometry(QtCore.QRect(30, 380, 640, 131))
+        self.textEdit.setGeometry(QtCore.QRect(30, 380, 640, 150))
         self.textEdit.setObjectName(_fromUtf8("textEdit"))
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtGui.QStatusBar(MainWindow)

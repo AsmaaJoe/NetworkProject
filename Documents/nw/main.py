@@ -96,12 +96,15 @@ class ExampleApp(QtGui.QMainWindow, project.Ui_MainWindow):
         # print content
         # print hexdump2(content)
         # print hexalist
-	  #def setFilter(self)
-		#self.
 		
+    #def set_filter(self):
+    		
+    		
     def b1_clicked(self):
 
+        #f= self.filter.Text
         self.get_thread = SniffThread()
+        
         self.connect(self.get_thread, SIGNAL("settext(QString,QString)"), self.settext)
 
         self.connect(self.get_thread, SIGNAL("finished()"), self.done)
