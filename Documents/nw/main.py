@@ -1,50 +1,95 @@
 from PyQt4 import QtGui, QtCore # Import the PyQt4 module we'll need
 import sys # We need sys so that we can pass argv to QApplication
-
+from PyQt4.QtCore import QThread, SIGNAL
 import project # This file holds our MainWindow and all design related things
               # it also keeps events etc that we defined in Qt Designer
 from scapy.all import *
+from ast import literal_eval
+
+counter = 0
+
+class SniffThread(QThread):
+  
+  def __init__(self):
+      QThread.__init__(self)
+
+  def __del__(self):
+        self.wait()
+ 
+  def capturepackets(self,packet):
+        global counter
+        counter += 1
+        psummary='Packet #{}: {} ==> {}'.format(counter, packet[0][1].src, packet[0][1].dst)
+  
+        content = str(packet)
+        content =repr(content)
+        self.emit(QtCore.SIGNAL('settext(QString,QString)'), psummary,content)   
+        # self.emit(QtCore.SIGNAL('printhexa(QString)'), content)    
+      
+
+  def run(self):
+      # your logic here 
+      pkts= sniff(timeout=50,prn=self.capturepackets)
+      # while 1:
+      #   pkt= sniff(count=1)
+      #   psummary='Packet #{}: {} ==> {}'.format(counter, pkt[0][1].src, pkt[0][1].dst) 
+      #   # print psummary
+      #   self.emit(QtCore.SIGNAL('settext(QString)'), psummary)  
 
 class ExampleApp(QtGui.QMainWindow, project.Ui_MainWindow):
+    hexalist = []
     def __init__(self):
-        # Explaining super is out of the scope of this article
-        # So please google it if you're not familar with it
-        # Simple reason why we use it here is that it allows us to
-        # access variables, methods etc in the design.py file
         super(self.__class__, self).__init__()
         self.setupUi(self)  # This is defined in design.py file automatically
-        ##pkts=sniff(count=3,prn=self.textEdit.setText(lambda x: x.custom_action()))
-        #packet= sniff(count=3)
-        
-        # for i in range (5):
-        #     packet= sniff(count=1)
-        #     self.textEdit.append('Packet : {} ==> {}'.format( packet[0][1].src, packet[0][1].dst)   )
-        ##self.textEdit.setText(str(pkts[0]))
-        ##Qstring y = pkts[0]
         self.pushButton.clicked.connect(self.b1_clicked)
-        self.pushButton_2.clicked.connect(self.b2_clicked)
-      ##  self.textEdit.setText(str(pkts[0]))
-                            # It sets up layout and widgets that are defined
-  
+        self.list_submissions.itemClicked.connect(self.printhexa)
+        # self.pushButton_2.clicked.connect(self.b2_clicked)
+    def printhexa(self,content):
+        t = self.list_submissions.currentItem().text()
+        t=str(t)
+        i = t.find("#")+1
+        j=t.find(":")
+        index=int(t[i:j])
+        self.textEdit.setText(self.hexalist[index])
+       
+    def settext(self,packettext,content):
+        # global hexalist
+        content=str(content)
+        content=literal_eval(content)
+        h= hexdump(content,dump=True)
+        self.hexalist.append(h)
+        # content = literal_eval(content)
+        # self.textEdit.append(h)
+        self.list_submissions.addItem(packettext)
+        # hexdump(content[1:-1])
+
+        # print "hello"
+        # print content
+        # print hexdump2(content)
+        # print hexalist
+
     def b1_clicked(self):
-         for i in range (5):
-            packet= sniff(count=1)
-            self.textEdit.append('Packet : {} ==> {}'.format( packet[0][1].src, packet[0][1].dst)   )
-    def b2_clicked(self):
-        self.textEdit.setText('')
 
-     # for i in range(10):
-     #    print i
-     #    if self.pushButton:
-     #        break
-     #    time.sleep(0.5)    
+        self.get_thread = SniffThread()
+        self.connect(self.get_thread, SIGNAL("settext(QString,QString)"), self.settext)
 
-		
-		
-def custom_action(packet):
-    global counter
-    counter += 1
-    return   'Packet #{}: {} ==> {}'.format(counter, packet[0][1].src, packet[0][1].dst)   
+        self.connect(self.get_thread, SIGNAL("finished()"), self.done)
+
+        self.get_thread.start()
+     
+        self.pushButton_2.setEnabled(True)
+      
+        self.pushButton_2.clicked.connect(self.get_thread.terminate)
+       
+        self.pushButton.setEnabled(False)
+
+          # 
+    def done(self):
+        self.pushButton_2.setEnabled(False)
+        self.pushButton.setEnabled(True)
+        # self.hexalist=[]
+        QtGui.QMessageBox.information(self, "Done!", "Done Capturing Packets!")
+		 
 def main():
 	
     app = QtGui.QApplication(sys.argv)  # A new instance of QApplication
