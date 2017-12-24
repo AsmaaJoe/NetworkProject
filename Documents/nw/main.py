@@ -10,9 +10,9 @@ counter = 0
 
 class SniffThread(QThread):
   
-  def __init__(self):
+  def __init__(self,filters):
       QThread.__init__(self)
-
+      self.filters=filters
   def __del__(self):
         self.wait()
  
@@ -29,7 +29,10 @@ class SniffThread(QThread):
 
   def run(self):
       # your logic here 
-      pkts= sniff(timeout=50,prn=self.capturepackets)
+      if self.filters=='':
+        pkts= sniff(timeout=50,prn=self.capturepackets)
+      else:
+          pkts= sniff(filter= self.filters,timeout=50,prn=self.capturepackets)
       # while 1:
       #   pkt= sniff(count=1)
       #   psummary='Packet #{}: {} ==> {}'.format(counter, pkt[0][1].src, pkt[0][1].dst) 
@@ -63,14 +66,10 @@ class ExampleApp(QtGui.QMainWindow, project.Ui_MainWindow):
         self.list_submissions.addItem(packettext)
         # hexdump(content[1:-1])
 
-        # print "hello"
-        # print content
-        # print hexdump2(content)
-        # print hexalist
-
     def b1_clicked(self):
-
-        self.get_thread = SniffThread()
+        filter2=self.filter.text()
+        filter2= str(filter2)
+        self.get_thread = SniffThread(filter2)
         self.connect(self.get_thread, SIGNAL("settext(QString,QString)"), self.settext)
 
         self.connect(self.get_thread, SIGNAL("finished()"), self.done)
