@@ -25,7 +25,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(705, 600)
+        MainWindow.resize(700, 600)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.label = QtGui.QLabel(self.centralwidget)
@@ -44,9 +44,7 @@ class Ui_MainWindow(object):
         self.filter = QtGui.QLineEdit(self.centralwidget)
         self.filter.setGeometry(QtCore.QRect(180, 50, 441, 27))
         self.filter.setObjectName(_fromUtf8("LineEdit"))
-        # self.comboBox = QtGui.QComboBox(self.centralwidget)
-        # self.comboBox.setGeometry(QtCore.QRect(180, 50, 441, 27))
-        # self.comboBox.setObjectName(_fromUtf8("comboBox"))
+
         self.pushButton = QtGui.QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(50, 90, 201, 27))
         self.pushButton.setAutoFillBackground(False)
@@ -65,7 +63,7 @@ class Ui_MainWindow(object):
         # self.tableView.setGeometry(QtCore.QRect(20, 160, 661, 192))
         # self.tableView.setObjectName(_fromUtf8("tableView"))
         self.textEdit = QtGui.QTextEdit(self.centralwidget)
-        self.textEdit.setGeometry(QtCore.QRect(130, 380, 431, 131))
+        self.textEdit.setGeometry(QtCore.QRect(30, 380, 640, 150))
         self.textEdit.setObjectName(_fromUtf8("textEdit"))
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtGui.QStatusBar(MainWindow)
@@ -89,7 +87,7 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Fifa_N_Wireshark", None))
         self.label.setText(_translate("MainWindow", "Capture", None))
         self.label_2.setText(_translate("MainWindow", "using this filter:", None))
         self.pushButton.setText(_translate("MainWindow", "Start", None))

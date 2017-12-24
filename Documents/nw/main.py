@@ -3,11 +3,40 @@ import sys # We need sys so that we can pass argv to QApplication
 from PyQt4.QtCore import QThread, SIGNAL
 import project # This file holds our MainWindow and all design related things
               # it also keeps events etc that we defined in Qt Designer
+import logging
+logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 from scapy.all import *
 from ast import literal_eval
 
 counter = 0
+def hexdump2(x):
 
+   # x=str(x)
+   l = len(x)
+   i = 0
+   hexpkt=""
+   while i < l:
+       d = "%04x  " % i
+       hexpkt+=d 
+       for j in range(16):
+           if i+j < l:
+               d = "%02X" % ord(x[i+j])
+               hexpkt+=d
+               
+           else:
+               d = "  "
+               hexpkt+=d
+           if j%16 == 7:
+               d = ""
+               hexpkt+=d
+               
+       d = "  "
+       hexpkt+=d
+       d = sane_color(x[i:i+16])
+       hexpkt+=d
+       hexpkt+="\n"
+       i += 16
+   return hexpkt
 class SniffThread(QThread):
   
   def __init__(self,filters):
@@ -27,12 +56,14 @@ class SniffThread(QThread):
         # self.emit(QtCore.SIGNAL('printhexa(QString)'), content)    
       
 
-  def run(self):
+  def run(self, f):
       # your logic here 
+
       if self.filters=='':
         pkts= sniff(timeout=50,prn=self.capturepackets)
       else:
           pkts= sniff(filter= self.filters,timeout=50,prn=self.capturepackets)
+
       # while 1:
       #   pkt= sniff(count=1)
       #   psummary='Packet #{}: {} ==> {}'.format(counter, pkt[0][1].src, pkt[0][1].dst) 
@@ -45,7 +76,11 @@ class ExampleApp(QtGui.QMainWindow, project.Ui_MainWindow):
         super(self.__class__, self).__init__()
         self.setupUi(self)  # This is defined in design.py file automatically
         self.pushButton.clicked.connect(self.b1_clicked)
+        
         self.list_submissions.itemClicked.connect(self.printhexa)
+        #f= self.filter.Text
+    		
+        #self.emit(QtCore.SIGNAL('run(QString)'), f) 
         # self.pushButton_2.clicked.connect(self.b2_clicked)
     def printhexa(self,content):
         t = self.list_submissions.currentItem().text()
@@ -59,17 +94,19 @@ class ExampleApp(QtGui.QMainWindow, project.Ui_MainWindow):
         # global hexalist
         content=str(content)
         content=literal_eval(content)
-        h= hexdump(content,dump=True)
+        h= hexdump2(content)
         self.hexalist.append(h)
         # content = literal_eval(content)
         # self.textEdit.append(h)
         self.list_submissions.addItem(packettext)
         # hexdump(content[1:-1])
 
+
     def b1_clicked(self):
         filter2=self.filter.text()
         filter2= str(filter2)
         self.get_thread = SniffThread(filter2)
+
         self.connect(self.get_thread, SIGNAL("settext(QString,QString)"), self.settext)
 
         self.connect(self.get_thread, SIGNAL("finished()"), self.done)
@@ -93,6 +130,7 @@ def main():
 	
     app = QtGui.QApplication(sys.argv)  # A new instance of QApplication
 
+  
     form = ExampleApp()                 # We set the form to be our ExampleApp (design) 
     form.show()                         # Show the form
     app.exec_()                         # and execute the app
